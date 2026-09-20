@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web học 1000 từ vựng của Kim Thanh 🌸</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-deco deco1">✦</div><div class="bg-deco deco2">♡</div><div class="bg-deco deco3">✿</div>
+<header class="topbar">
+  <div class="brand">🌸 <span class="brand-name">Web học 1000 từ vựng của Kim Thanh</span><small>A1–A2</small></div>
+  <div class="top-stats"><span>🔥 <b id="streak">0</b></span><span>⭐ <b id="xp">0</b> XP</span></div>
+</header>
+
+<main id="app">
+  <section id="home" class="screen active">
+    <div class="hero card">
+      <div>
+        <p class="eyebrow">HỌC MỖI NGÀY, NHỚ LÂU HƠN ✨</p>
+        <h1>Ready to learn? <span>💕</span></h1>
+        <p id="hello">Mình học một chút hôm nay nhé!</p>
+      </div>
+      <div class="mascot">🐰</div>
+    </div>
+
+    <div class="goal card">
+      <div class="row between"><div><b>🌱 Mục tiêu hôm nay</b><p class="muted" id="goalText">0 / 15 từ</p></div><div class="goal-num" id="goalPct">0%</div></div>
+      <div class="progress"><i id="goalBar"></i></div>
+    </div>
+
+    <div class="dashboard-grid">
+      <button class="mode-card pink" onclick="startSession('today')"><span>✨</span><b>Today's Learning</b><small id="todayDesc">Ôn từ đến hạn + học từ mới</small></button>
+      <button class="mode-card purple" onclick="startSession('review')"><span>🔄</span><b>Review</b><small id="reviewDesc">0 từ cần ôn</small></button>
+      <button class="mode-card blue" onclick="startSession('new')"><span>🌱</span><b>New Words</b><small>Học từ mới</small></button>
+      <button class="mode-card yellow" onclick="showVocabulary()"><span>📚</span><b>Vocabulary</b><small>Khám phá 1000 từ</small></button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="mini card"><span>📖</span><b id="learnedCount">0</b><small>đã học</small></div>
+      <div class="mini card"><span>🌸</span><b id="familiarCount">0</b><small>đang nhớ</small></div>
+      <div class="mini card"><span>💎</span><b id="masteredCount">0</b><small>mastered</small></div>
+      <div class="mini card"><span>🎯</span><b id="accuracy">0%</b><small>accuracy</small></div>
+    </div>
+
+    <div class="card tips"><b>💡 Cách học hiệu quả</b><p>Từ khó sẽ xuất hiện lại sớm hơn. Từ bạn nhớ tốt sẽ được giãn khoảng ôn. Toàn bộ tiến độ được lưu ngay trên trình duyệt của bạn.</p></div>
+  </section>
+
+  <section id="learn" class="screen">
+    <div class="session-head">
+      <button class="icon-btn" onclick="goHome()">←</button>
+      <div><b id="sessionTitle">Learning</b><small id="sessionProgress">1 / 60</small></div>
+      <button class="icon-btn" onclick="goHome()">×</button>
+    </div>
+    <div class="progress"><i id="sessionBar"></i></div>
+
+    <div id="questionArea"></div>
+    <div id="answerArea"></div>
+  </section>
+
+  <section id="vocabulary" class="screen">
+    <div class="session-head">
+      <button class="icon-btn" onclick="goHome()">←</button>
+      <div><b>📚 Vocabulary</b><small>1000 từ A1–A2</small></div>
+    </div>
+    <div class="search-wrap"><span>🔎</span><input id="search" placeholder="Tìm từ tiếng Anh hoặc nghĩa tiếng Việt..." oninput="renderVocab()"></div>
+    <div class="filter-row" id="categoryFilters"></div>
+    <div id="vocabList" class="vocab-list"></div>
+  </section>
+
+  <section id="wordDetail" class="screen">
+    <button class="icon-btn" onclick="showVocabulary()">←</button>
+    <div id="detailCard" class="detail-card card"></div>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <button onclick="goHome()">🏠<small>Home</small></button>
+  <button onclick="startSession('today')">✨<small>Learn</small></button>
+  <button onclick="showVocabulary()">📚<small>Words</small></button>
+  <button onclick="showSettings()">⚙️<small>Settings</small></button>
+</nav>
+
+<div id="settingsModal" class="modal hidden">
+ <div class="modal-box">
+  <button class="close" onclick="hideSettings()">×</button>
+  <h2>⚙️ Settings</h2>
+  <label>Daily goal</label>
+  <div class="goal-options">
+    <button onclick="setGoal(5)">5</button><button onclick="setGoal(15)">15</button>
+    <button onclick="setGoal(20)">20</button><button onclick="setGoal(30)">30</button>
+  </div>
+  <hr>
+  <button class="secondary" onclick="exportProgress()">📤 Export progress</button>
+  <label class="file-label">📥 Import progress<input type="file" accept=".json" onchange="importProgress(event)"></label>
+  <button class="danger" onclick="resetProgress()">🗑️ Reset all progress</button>
+ </div>
+</div>
+
+<div id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>

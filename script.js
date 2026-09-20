@@ -4,15 +4,30 @@ const KEY="wordyProgressV1";
 const defaultState=()=>({
   words:{}, xp:0, streak:0, lastStudy:null, dailyGoal:15, version:2,
   dailyDate:null, dailyDone:0, totalCorrect:0, totalWrong:0,
-  achievements:[]
+  achievements:[], cursor:0
 });
 let state=loadState(), session=[], sessionIndex=0, sessionTitle="", currentQuestion=null, category="All";
 let sessionWords=[], sessionProgress={}, sessionNeed={}, marks={}, marksApplied=false, answered=false, graded=false, sessionXP=0, composing=false;
+let sessionMode="", sessionCursorStart=0, sessionCursorDone=false;
 
 /* Nâng cấp dữ liệu cũ: mục tiêu mặc định 10 -> 15. Chạy cho cả load lẫn import. */
 function migrate(s){
   if((s.version||1)<2){ if(s.dailyGoal===10) s.dailyGoal=15; s.version=2 }
+  s.cursor=initCursor(s);
   return s;
+}
+/* Con trỏ học tuần tự: số từ đầu danh sách đã học xong. Ngày 1 = từ 1–15, ngày 2 = từ 16–30...
+   Người đã học từ trước khi có tính năng này thì suy ra từ tiến độ cũ: lấy từ xa nhất đã đụng tới.
+   Không thể suy ra bằng "có entry trong state.words hay không" — wordState() tạo entry rỗng cho
+   cả 1000 từ ngay lần updateHome() đầu tiên, nên phải xét level/correct/wrong mới phân biệt được. */
+function initCursor(s){
+  if(typeof s.cursor==="number"&&s.cursor>=0)return Math.min(s.cursor,VOCAB.length);
+  let max=-1;
+  for(let i=0;i<VOCAB.length;i++){
+    const w=s.words&&s.words[VOCAB[i].id];
+    if(w&&(w.level>0||w.correct>0||w.wrong>0))max=i;
+  }
+  return max+1;
 }
 function loadState(){
   /* Phải migrate TRƯỚC khi trộn default: defaultState() đã mang version:2 nên nếu trộn trước,
@@ -59,7 +74,9 @@ function updateHome(){
   document.getElementById("accuracy").textContent=accuracy()+"%";
   const due=VOCAB.filter(v=>{const s=wordState(v.id);return s.level>0&&isDue(s)}).length;
   document.getElementById("reviewDesc").textContent=due?`${due} từ cần ôn`:"Không có từ đến hạn 💕";
-  document.getElementById("todayDesc").textContent=`${due} ôn + ${Math.max(0,state.dailyGoal-due)} từ mới`;
+  /* Hiện luôn khoảng từ của ngày để thấy rõ đang học tuần tự tới đâu. */
+  const c=Math.min(state.cursor,VOCAB.length), left=VOCAB.length-c, take=Math.min(state.dailyGoal,left);
+  document.getElementById("todayDesc").textContent=left?`Từ ${c+1}–${c+take} · ${take} từ mới`:"Đã học hết 1000 từ 🎉";
 }
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -116,17 +133,24 @@ function speakWord(id,onFail){
 function startSession(mode){
   updateDaily();
   let arr=[];
-  if(mode==="review") arr=VOCAB.filter(v=>{let s=wordState(v.id);return s.level>0&&isDue(s)});
-  else if(mode==="new") arr=VOCAB.filter(v=>wordState(v.id).level===0);
-  else {
-    const due=VOCAB.filter(v=>{let s=wordState(v.id);return s.level>0&&isDue(s)});
-    const fresh=VOCAB.filter(v=>wordState(v.id).level===0);
-    arr=[...shuffle(due),...shuffle(fresh)];
+  if(mode==="today"){
+    /* Tuần tự theo đúng danh sách: ngày 1 = từ 1–15, ngày 2 = từ 16–30... chỉ lấy từ CHƯA học.
+       Không trộn từ đến hạn ôn vào đây — từ cũ đã có mục 🔄 Review lo.
+       Ở đây KHÔNG nhích con trỏ: nhích lúc buổi học xong (advanceCursor) để thoát giữa buổi
+       không làm mất từ nào. */
+    const start=Math.min(state.cursor,VOCAB.length);
+    arr=VOCAB.slice(start,start+state.dailyGoal);
+    if(!arr.length){toast("🎉 Bạn đã học hết 1000 từ! Dùng mục 🔄 Review để ôn lại nhé.");return}
+    sessionCursorStart=start;
   }
+  else if(mode==="review") arr=VOCAB.filter(v=>{let s=wordState(v.id);return s.level>0&&isDue(s)});
+  else arr=VOCAB.filter(v=>wordState(v.id).level===0);
   if(!arr.length){toast("🎉 Bạn không có từ nào cần học lúc này!");return}
+  sessionMode=mode; sessionCursorDone=false;
   sessionWords=arr.slice(0,Math.min(state.dailyGoal,arr.length));
-  /* New Words giữ nguyên flashcard + trắc nghiệm như cũ; 2 chế độ kia dùng engine 4 dạng. */
-  session=mode==="new"?sessionWords.map(v=>({v,type:"auto"})):buildQuestions(sessionWords);
+  /* Xáo vị trí các từ trong buổi (vẫn đúng bộ từ của ngày đó).
+     New Words giữ nguyên flashcard + trắc nghiệm như cũ; 2 chế độ kia dùng engine 4 dạng. */
+  session=mode==="new"?sessionWords.map(v=>({v,type:"auto"})):buildQuestions(shuffle(sessionWords));
   sessionNeed={}; session.forEach(i=>sessionNeed[i.v.id]=(sessionNeed[i.v.id]||0)+1);
   sessionIndex=0; sessionProgress={}; sessionXP=0; marksApplied=false;
   sessionTitle=mode==="review"?"Review":mode==="new"?"New Words":"Today's Learning";
@@ -285,11 +309,21 @@ function applyWord(v,p){
    KHÔNG chốt sổ SRS cho từ trả lời dở — làm vậy là tặng không mục tiêu ngày và đổi lịch ôn
    dựa trên dữ liệu nửa vời. Từ dở dang giữ nguyên cấp độ cũ và sẽ quay lại như thường. */
 function flushSession(){ if(session.length) save() }
+/* Học tuần tự nên con trỏ chỉ nhích khi buổi học đã làm XONG cả 60 câu.
+   Thoát giữa buổi thì giữ nguyên con trỏ: lần sau vào lại đúng 15 từ đang học dở.
+   sessionCursorDone chặn nhích 2 lần nếu màn hình tổng kết bị render lại. */
+function advanceCursor(){
+  if(sessionCursorDone||sessionMode!=="today")return;
+  sessionCursorDone=true;
+  state.cursor=Math.min(VOCAB.length,sessionCursorStart+sessionWords.length);
+  save(true);
+}
 function finishSession(){
   document.getElementById("answerArea").innerHTML="";
   document.getElementById("sessionProgress").textContent=`${session.length} câu · ${sessionWords.length} từ`;
   document.getElementById("sessionBar").style.width="100%";
   marks={}; marksApplied=false;
+  advanceCursor();
   /* Chọn sẵn theo điểm: đúng >= 3/4 coi như đã thuộc, người dùng sửa lại được. */
   sessionWords.forEach(v=>{const p=sessionProgress[v.id];marks[v.id]=!!p&&p.answered>0&&p.correct/p.answered>=.75});
   document.getElementById("questionArea").innerHTML=`

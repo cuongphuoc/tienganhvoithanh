@@ -14,7 +14,17 @@ Mỗi từ trong buổi học được luyện đủ **4 kỹ năng**, các dạ
 | 🔤 Ghi từ tiếng Anh | nghĩa tiếng Việt | gõ từ tiếng Anh |
 | 🎧 Nghe | chỉ phát âm, không hiện chữ | chọn từ tiếng Anh đúng |
 
-Buổi học lấy **từ đến hạn ôn trước, rồi tới từ mới**, tối đa bằng mục tiêu ngày.
+### Học tuần tự, không nhảy cóc
+
+Today's Learning đi **lần lượt theo đúng danh sách 1000 từ**, không random:
+
+- Ngày 1 → từ 1–15 · Ngày 2 → từ 16–30 · Ngày 3 → từ 31–45 …
+- Mỗi ngày lấy đúng **15 từ mới kế tiếp** (đổi được trong Settings: 5/15/20/30).
+- Con trỏ chỉ nhích khi bạn làm **xong cả 60 câu**. Thoát giữa buổi thì lần sau vào lại đúng 15 từ đang học dở — không mất từ nào.
+- Trong một buổi, **vị trí các từ được xáo** để khỏi học vẹt theo danh sách, nhưng vẫn đúng bộ 15 từ của ngày đó.
+- Học hết 1000 từ (~67 ngày) thì Today's Learning báo hoàn thành; từ cũ chuyển sang ôn ở mục 🔄 Review.
+
+Các từ **đến hạn ôn không trộn vào Today's Learning** — chúng nằm ở mục 🔄 Review.
 
 ### 🏁 Đánh dấu cuối buổi
 Kết thúc buổi học, toàn bộ từ của buổi được liệt kê kèm điểm `đúng/tổng` để bạn tự đánh dấu **Đã thuộc / Chưa thuộc**. Lựa chọn này ghi đè lịch ôn tập:
@@ -22,7 +32,7 @@ Kết thúc buổi học, toàn bộ từ của buổi được liệt kê kèm 
 - **Chưa thuộc** → đưa về cấp 0 và hẹn ôn lại sau 5 phút
 
 ### 🔄 Review
-Cùng 4 dạng bài tập như trên, áp dụng cho các từ đã đến hạn ôn.
+Cùng 4 dạng bài tập như trên, áp dụng cho các từ đã đến hạn ôn (tối đa 15 từ/buổi). Đây là nơi các từ cũ quay lại — kể cả những từ bạn đánh dấu **Chưa thuộc**.
 
 ### 🌱 New Words
 Học từ mới theo kiểu flashcard (Again / I Know) — giữ nguyên lối học truyền thống.

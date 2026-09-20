@@ -26,6 +26,8 @@ Today's Learning đi **lần lượt theo đúng danh sách 1000 từ**, không 
 
 Các từ **đến hạn ôn không trộn vào Today's Learning** — chúng nằm ở mục 🔄 Review.
 
+> **Đã dùng bản cũ?** Bản cũ lấy từ bằng cách xáo ngẫu nhiên **toàn bộ** số từ chưa học rồi cắt 15, nên ngay ngày đầu đã là 15 từ rải rác khắp danh sách. Vì vậy lần đầu mở bản mới, bạn sẽ được đưa về **bắt đầu từ từ 1**. Cấp độ SRS của từng từ vẫn giữ nguyên — những từ đã biết sẽ thấy dễ.
+
 ### 🏁 Đánh dấu cuối buổi
 Kết thúc buổi học, toàn bộ từ của buổi được liệt kê kèm điểm `đúng/tổng` để bạn tự đánh dấu **Đã thuộc / Chưa thuộc**. Lựa chọn này ghi đè lịch ôn tập:
 - **Đã thuộc** → đẩy lịch ôn xa ra (tối thiểu 7 ngày)
